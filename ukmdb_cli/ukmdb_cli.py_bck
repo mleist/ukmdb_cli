@@ -1,0 +1,139 @@
+# -*- coding: utf-8 -*-
+"""UKMDB CLI.
+
+Usage: ukm_cli [--help] <command> [<args>...]
+
+  ukm_cli mq_ping [--help] [--timing] [--max-timing=<msec>]
+  ukm_cli get_id <uuid> [--help] [--verbose] [--debug]
+  ukm_cli get_uuid <app_domain> <app_name> <app_id> [--help] [--verbose] [--debug]
+
+  ukm_cli (-h | --help)
+  ukm_cli --version
+
+"""
+from uuid import uuid5
+from docopt import docopt
+from schema import Schema, SchemaError, Optional, Or, And, Use
+from ukmdb_cli import __version__
+
+
+def validate(args, test_schema):
+    try:
+        args = test_schema.validate(args)
+        return args
+    except SchemaError as e:
+        exit(e)
+
+# --------------------------------------------------
+# mq_ping
+# --------------------------------------------------
+
+mq_ping__schema_ = Schema({
+    'mq_ping': bool,
+    Optional('--help'): bool,
+    Optional('--timing'): bool,
+    Optional('--verbose'): bool,
+    Optional('--debug'): bool,
+    Optional('--max-timing'): And(Use(float), lambda n: n >= 0.0),
+})
+
+
+def mq_ping(args):
+    """usage: ukm_cli mq_ping [--help] [--verbose] [--debug] [--timing] [--max-timing=<msec>]
+
+    Options:
+      -h --help                Show this mq_ping command screen.
+      -v --verbose             Show more information.
+      -d --debug               Show debug information.
+      -t --timing              Show some timing information after ping.
+      --max-timing=<msec>      Wait time in ms for answer [default: 1000].
+    """
+    if args['--timing']:
+        print('Timing')
+    if args['--verbose']:
+        print('#### VERBOSE ####')
+    else:
+        print('---- NO VERBOSE ----')
+    if args['--debug']:
+        print('DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG ')
+    print("#############  mq_ping  #############")
+    print(args)
+
+# --------------------------------------------------
+# get_id
+# --------------------------------------------------
+
+get_id__schema_ = Schema({
+    'get_id': bool,
+    '<uuid>': Use(str),
+    Optional('--help'): bool,
+    Optional('--verbose'): bool,
+    Optional('--debug'): bool,
+})
+
+
+def get_id(args):
+    """usage: ukm_cli get_id <uuid> [--help] [--verbose] [--debug]
+
+    Options:
+      -h --help                Show this mq_ping command screen.
+      -v --verbose             Show more information.
+      -d --debug               Show debug information.
+    """
+    if args['--verbose']:
+        print('#### VERBOSE ####')
+    else:
+        print('---- NO VERBOSE ----')
+    if args['--debug']:
+        print('DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG ')
+    print("#############  get_id  #############")
+    print(args)
+
+# --------------------------------------------------
+# get_uuid
+# --------------------------------------------------
+
+get_uuid__schema_ = Schema({
+    'get_uuid': bool,
+    '<app_domain>': Use(str),
+    '<app_name>': Use(str),
+    '<app_id>': Use(str),
+    Optional('--help'): bool,
+    Optional('--verbose'): bool,
+    Optional('--debug'): bool,
+})
+
+
+def get_uuid(args):
+    """usage: ukm_cli get_uuid <app_domain> <app_name> <app_id> [--help] [--verbose] [--debug]
+
+    Options:
+      -h --help                Show this mq_ping command screen.
+      -v --verbose             Show more information.
+      -d --debug               Show debug information.
+    """
+    if args['--verbose']:
+        print('#### VERBOSE ####')
+    else:
+        print('---- NO VERBOSE ----')
+    if args['--debug']:
+        print('DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG ')
+    print("#############  get_uuid  #############")
+    print(args)
+
+# --------------------------------------------------
+
+
+
+def main():
+    arguments = docopt(__doc__, options_first=True, version=__version__)
+
+    if arguments['<command>'] == 'mq_ping':
+        mq_ping(validate(docopt(mq_ping.__doc__), mq_ping__schema_))
+    elif arguments['<command>'] == 'get_id':
+        get_id(validate(docopt(get_id.__doc__), get_id__schema_))
+    elif arguments['<command>'] == 'get_uuid':
+        get_uuid(validate(docopt(get_uuid.__doc__), get_uuid__schema_))
+    else:
+        exit(
+            "{0} is not a command. See 'ukm_cli --help'.".format(arguments['<command>']))
