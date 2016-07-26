@@ -6,6 +6,8 @@
 Usage: ukm_cli [--help] [--verbose] [--debug ...] <command> [<args>...]
 
   ukm_cli [--debug ...] add_host [--help] <fqdn>
+  ukm_cli [--debug ...] edit_host [--help] <fqdn>
+  ukm_cli [--debug ...] del_host [--help] <fqdn>
 
   ukm_cli [--debug ...] sniff_arp [--help] <iface>
 
@@ -32,7 +34,7 @@ from ukmdb_cli import cmd_get_uuid
 from ukmdb_cli import cmd_get_id
 from ukmdb_cli import cmd_mq_ping
 from ukmdb_cli import cmd_itop_info
-from ukmdb_cli import cmd_mq_info, cmd_add_host
+from ukmdb_cli import cmd_mq_info, cmd_add_host, cmd_edit_host, cmd_del_host
 from ukmdb_cli import cmd_sniff_arp
 from ukmdb_cli.cmd_base import validate, set_debug_level
 from ukmdb_cli import __version__
@@ -63,9 +65,15 @@ def main():
     elif arguments['<command>'] == 'itop_info':
         cmd_itop_info.cmd(validate(docopt(cmd_itop_info.__doc__),
                                    cmd_itop_info.SCHEMA))
+    elif arguments['<command>'] == 'edit_host':
+        cmd_edit_host.cmd(validate(docopt(cmd_edit_host.__doc__),
+                                   cmd_edit_host.SCHEMA))
     elif arguments['<command>'] == 'add_host':
         cmd_add_host.cmd(validate(docopt(cmd_add_host.__doc__),
                                   cmd_add_host.SCHEMA))
+    elif arguments['<command>'] == 'del_host':
+        cmd_del_host.cmd(validate(docopt(cmd_del_host.__doc__),
+                                  cmd_del_host.SCHEMA))
     elif arguments['<command>'] == 'sniff_arp':
         cmd_sniff_arp.cmd(validate(docopt(cmd_sniff_arp.__doc__),
                                    cmd_sniff_arp.SCHEMA))

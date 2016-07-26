@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # pylint: disable=C0330
-"""usage: ukm_cli [--debug ...] add_host [--help] <fqdn>
+"""usage: ukm_cli [--debug ...] del_host [--help] <fqdn>
 
 Arguments:
   fqdn                fqdn of the host
 
 Options:
-  -h --help                Show this add_host command screen.
+  -h --help                Show this del_host command screen.
   -d --debug               Show debug information.
 """
 
@@ -17,8 +17,9 @@ from ukmdb_worker import worker
 from ukmdb_cli.cmd_base import conv_dict
 
 UKMDB_LOG = logging.getLogger("ukmdb")
+
 SCHEMA = Schema({
-    'add_host': bool,
+    'del_host': bool,
     '<fqdn>': Use(str),
     Optional('--help'): bool,
     Optional('--debug'): And(Use(int), lambda n: n in (0, 1, 2, 3)),
@@ -26,7 +27,7 @@ SCHEMA = Schema({
 
 
 def cmd(args):
-    UKMDB_LOG.debug("starting command 'add_host'")
+    UKMDB_LOG.debug("starting command 'del_host'")
     (msg_uuid, obj_dict, expires) = conv_dict('kvm@ikom',  # app_domain
                                               'vhost',  # app_type
                                               'kvm@adm000-kvm16f',  # app_name
@@ -35,9 +36,9 @@ def cmd(args):
                                                   'ddd', 'eee', 'fff']},  # props
                                               'Alien vs. Predator',  # comment
                                               )
-    worker.add_object.apply_async((obj_dict,),
+    worker.del_object.apply_async((obj_dict,),
                                   exchange='ukmdb_all_in',
                                   expires=expires)
     UKMDB_LOG.debug(str(args))
-    UKMDB_LOG.debug("command 'add_host' stopped")
+    UKMDB_LOG.debug("command 'del_host' stopped")
     return str(msg_uuid)

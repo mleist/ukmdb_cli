@@ -13,13 +13,12 @@ Options:
 
 import logging
 import ipaddress
-import uuid
 import re
 from cachetools import ttl_cache
-from datetime import datetime, timedelta
 from scapy.all import sniff, ARP
 from schema import Schema, Optional, And, Use
 from ukmdb_audit import worker
+from ukmdb_cli.cmd_base import get_uuid, tomorrow
 
 ukmdb_log = logging.getLogger("ukmdb")
 
@@ -42,14 +41,6 @@ def format_mac(mac):
     return mac
 
 
-def get_uuid(app_domain, app_type, app_name, app_id):
-    enterprise_number = '1.3.6.1.4.1.7052.'
-    oid_cat = enterprise_number + '%' + \
-        app_domain + '%' + app_type + '%' + \
-        app_name + '%' + app_id
-    return uuid.uuid5(uuid.NAMESPACE_OID, oid_cat)
-
-
 @ttl_cache()
 def send_new_ip(ip4_addr):
     ukmdb_log.debug("send_new_ip('%s')", ip4_addr)
@@ -59,9 +50,9 @@ def send_new_ip(ip4_addr):
     app_type = ukmdb_type
     app_name = ''
     app_id = str(ip4_obj)
-    ip_uuid = get_uuid(app_domain, app_type, app_name, app_id)
+    msg_uuid = get_uuid(app_domain, app_type, app_name, app_id)
     object_dict = {
-        'uuid': str(ip_uuid),
+        'uuid': str(msg_uuid),
         'type': ukmdb_type,
         'props': {},
         'app_domain': app_domain,
@@ -70,11 +61,10 @@ def send_new_ip(ip4_addr):
         'app_id': app_id,
         'comment': '',
     }
-    tomorrow = datetime.utcnow() + timedelta(days=1)
     worker.add_object.apply_async((object_dict,),
                                   exchange='ukmdb_all_in',
-                                  expires=tomorrow)
-    return str(ip_uuid)
+                                  expires=tomorrow())
+    return str(msg_uuid)
 
 
 @ttl_cache()
@@ -97,10 +87,9 @@ def send_new_mac(mac_addr):
         'app_id': app_id,
         'comment': '',
     }
-    tomorrow = datetime.utcnow() + timedelta(days=1)
     worker.add_object.apply_async((object_dict,),
                                   exchange='ukmdb_all_in',
-                                  expires=tomorrow)
+                                  expires=tomorrow())
     return str(mac_uuid)
 
 
@@ -126,10 +115,9 @@ def send_connection_uuid2uuid(uuid1, uuid2, direction):
         'item2': uuid2,
         'comment': '',
     }
-    tomorrow = datetime.utcnow() + timedelta(days=1)
     worker.add_object.apply_async((object_dict,),
                                   exchange='ukmdb_all_in',
-                                  expires=tomorrow)
+                                  expires=tomorrow())
     return str(con_uuid)
 
 
