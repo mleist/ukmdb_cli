@@ -5,9 +5,9 @@
 
 Usage: ukm_cli [--help] [--verbose] [--debug ...] <command> [<args>...]
 
-  ukm_cli [--debug ...] add_host [--help] <fqdn>
-  ukm_cli [--debug ...] edit_host [--help] <fqdn>
-  ukm_cli [--debug ...] del_host [--help] <fqdn>
+  ukm_cli [--debug ...] add_host [--help] <fqdn> [--comment=<comment>] [--set-tags=<tags>] [KEY_VALUE] ...
+  ukm_cli [--debug ...] edit_host [--help] <fqdn> [--comment=<comment>] [--set-tags=<tags> | --add-tags=<tags> | --del-tags=<tags>] [KEY_VALUE] ...
+  ukm_cli [--debug ...] del_host [--help] <fqdn> [--comment=<comment>]
 
   ukm_cli [--debug ...] sniff_arp [--help] <iface>
 
